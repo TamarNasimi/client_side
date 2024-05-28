@@ -1,76 +1,38 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import LoginScreen from '@/components/screens/LoginScreen';
+import RegisterScreen from '@/components/screens/RegisterScreen';
+import HomeScreen from '@/components/screens/HomeScreen';
+import ModeSelection from '@/components/screens/ModeSelectionScreen';
+import ProfileScreen from '@/components/screens/ProfileScreen';
+import { UserProvider } from '@/components/screens/UserContext';
+import DrawerNavigator from '@/components/screens/DrawerNavigator';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { App } from '@/App'
-// import {RegisterScreen} from '@/components/screens/RegisterScreen';
-// import {LoginScreen} from '@/components/screens/LoginScreen';
-export default function HomeScreen() {
+export type RootStackParamList = {
+  Login: undefined;
+  Register: undefined;
+  Home: undefined;
+  ModeSelection: undefined;
+  Profile: undefined;
+  Drawer: undefined;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
+
+export default function App() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView>
-        <App/>
-        {/* <RegisterScreen /> */}
-      </ThemedView>
-      {/* <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <LoginScreen />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView> */}
-    </ParallaxScrollView>
+    // עוטף את כל האפליקציה, מספק מידע אודות החיבור של המשתמש
+    <UserProvider>
+        <Stack.Navigator initialRouteName="Register" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ModeSelection" component={ModeSelection} options={{ headerShown: false }} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="Drawer" component={DrawerNavigator} />
+        </Stack.Navigator>
+    </UserProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});

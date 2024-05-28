@@ -1,41 +1,91 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TextInput ,Button, Text} from 'react-native';
-// import { TextInput, Button, Text } from 'react-native-paper';
 
-export function LoginScreen( {navigation }  ) {
-  // const LoginScreen = () => {
-    const [email, setEmail] = useState('');
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { TextInput, Button, Text } from 'react-native-paper';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '@/app/(tabs)/index';
+import { useNavigation } from '@react-navigation/native';
+import { useUser } from './UserContext';
+import axios from 'axios';
+
+type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+
+type Props = {
+  navigation: LoginScreenNavigationProp;
+};
+
+const LoginScreen: React.FC<Props> = ({ navigation }) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  navigation = useNavigation();
+  const { setUser } = useUser();
+  //בדיקה שכתובת המייל תקינה
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleLogin = () => {
-    // Handle login logic
+    let valid = true;
+    setEmailError('');
+    setPasswordError('');
+
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address.');
+      valid = false;
+    }
+    //בדיקת תקינות לסיסמא
+    if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters long.');
+      valid = false;
+    }
+
+    if (!email || !password) {
+      if (!email) setEmailError('Email is required.');
+      if (!password) setPasswordError('Password is required.');
+      valid = false;
+    }
+
+
+
+    if (valid) {
+
+      axios.post('http://localhost:3000/checkLogin/', { email: email, password: password })
+      .then(() => {
+        // axios.get(`http://localhost:3000/checkLogin/${email}/${password}`).then(() => {
+        // Perform login logic here and get the user data
+        const loggedInUser = { id: '123', email: email }; // Replace with actual user data
+        setUser(loggedInUser);
+        navigation.navigate('Profile');
+      })
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text>Login</Text>
+      <Text variant="headlineMedium">Login</Text>
       <TextInput
-         placeholder="Email"
+        label="Email"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
+        error={!!emailError}
       />
+      {emailError ? <Text style={styles.error}>{emailError}</Text> : null}
       <TextInput
-        placeholder="Password"
+        label="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
         style={styles.input}
+        error={!!passwordError}
       />
-      <Button title='Login' onPress={()=>{handleLogin()}}  />
-      <Button title="Don't have an account? Register" onPress={() => navigation.navigate('Register') } />
-      {/* <Button
-        mode="text"
-        onPress={handleLogin}
-        // onPress={() => navigation.navigate('Register')}
-        style={styles.button}
-      > */}
-        
+      {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
+      <Button mode="contained" onPress={handleLogin} style={styles.button}>
+        Login
+      </Button>
     </View>
   );
 };
@@ -52,6 +102,10 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 8,
   },
+  error: {
+    color: 'red',
+    marginBottom: 16,
+  },
 });
 
-// export default LoginScreen;
+export default LoginScreen;

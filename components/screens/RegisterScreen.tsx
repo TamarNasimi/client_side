@@ -1,50 +1,103 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Text, Button } from 'react-native';
-// import { , ,  } from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { TextInput, Button, Text } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '@/app/(tabs)/index';
+import { StackNavigationProp } from '@react-navigation/stack';
+import axios from 'axios';
 
-export function RegisterScreen({ navigation }) {
-  // const RegisterScreen = ({  }) => {
+type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>;
+
+type Props = {
+  navigation: RegisterScreenNavigationProp;
+};
+
+const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  navigation = useNavigation();
+
+  const validateForm = () => {
+    let valid = true;
+
+    if (!email) {
+      setEmailError('Email is required');
+      valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Please enter a valid email address');
+      valid = false;
+    } else {
+      setEmailError('');
+    }
+
+    if (!password) {
+      setPasswordError('Password is required');
+      valid = false;
+    } else if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters long');
+      valid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    if (password !== confirmPassword) {
+      setConfirmPasswordError('Passwords do not match');
+      valid = false;
+    } else {
+      setConfirmPasswordError('');
+    }
+
+    return valid;
+  };
 
   const handleRegister = () => {
-    // Handle registration logic
+    if (validateForm()) {
+      axios.post('http://localhost:3000/checkRegister/', { email: email, password: password })
+      .then(() => {
+      navigation.navigate('Profile');
+      })
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text >Register</Text>
+      <Text style={styles.title}>Register</Text>
       <TextInput
-        placeholder="Email"
+        label="Email"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
+        mode="outlined"
+        error={!!emailError}
       />
+      {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
       <TextInput
-        placeholder="Password"
+        label="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
         style={styles.input}
+        mode="outlined"
+        secureTextEntry
+        error={!!passwordError}
       />
+      {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
       <TextInput
-        placeholder="Confirm Password"
+        label="Confirm Password"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
-        secureTextEntry
         style={styles.input}
+        mode="outlined"
+        secureTextEntry
+        error={!!confirmPasswordError}
       />
-      <Button onPress={handleRegister} title='Register' />
-      <Button onPress={handleRegister} title="Already have an account? Login" />
-      {/*         
-      <Button
-        mode="text"
-        // onPress={() => navigation.goBack()}
-        style={styles.button}
-      >
-        Already have an account? Login
-      </Button> */}
+      {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
+      <Button mode="contained" onPress={handleRegister} style={styles.button}>
+        Register
+      </Button>
     </View>
   );
 };
@@ -53,13 +106,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 16,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   input: {
-    marginBottom: 16,
+    marginBottom: 10,
   },
   button: {
-    marginVertical: 8,
+    marginVertical: 10,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
   },
 });
 
+export default RegisterScreen;
