@@ -86,6 +86,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <Button mode="contained" onPress={handleLogin} style={styles.button}>
         Login
       </Button>
+      <Button mode="text"  onPress={() => navigation.navigate('Register') } >
+      Don't have an account? Register
+      </Button>
     </View>
   );
 };

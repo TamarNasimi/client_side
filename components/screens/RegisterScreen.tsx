@@ -13,9 +13,11 @@ type Props = {
 };
 
 const RegisterScreen: React.FC<Props> = ({ navigation }) => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [usernameError, setUsernameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
@@ -23,6 +25,13 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
   const validateForm = () => {
     let valid = true;
+
+    if (!username) {
+      setUsernameError('Username is required');
+      valid = false;
+    } else {
+      setUsernameError('');
+    }
 
     if (!email) {
       setEmailError('Email is required');
@@ -56,7 +65,9 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleRegister = () => {
     if (validateForm()) {
-      axios.post('http://localhost:3000/checkRegister/', { email: email, password: password })
+      console.log({username}, {email}, {password});
+      console.log("{username}, {email}, {password}");
+      axios.post('http://localhost:3000/checkRegister/', {username: username, email: email, password: password })
       .then(() => {
       navigation.navigate('Profile');
       })
@@ -66,6 +77,15 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register</Text>
+      <TextInput
+        label="Username"
+        value={username}
+        onChangeText={setUsername}
+        style={styles.input}
+        mode="outlined"
+        error={!!usernameError}
+      />
+      {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
       <TextInput
         label="Email"
         value={email}
@@ -97,6 +117,9 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
       <Button mode="contained" onPress={handleRegister} style={styles.button}>
         Register
+      </Button>
+      <Button mode="text" onPress={() => navigation.goBack()} style={styles.button} >
+        Already have an account? Login
       </Button>
     </View>
   );

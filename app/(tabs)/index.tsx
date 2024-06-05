@@ -24,11 +24,11 @@ export default function App() {
   return (
     // עוטף את כל האפליקציה, מספק מידע אודות החיבור של המשתמש
     <UserProvider>
-        <Stack.Navigator initialRouteName="Register" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="ModeSelection" component={ModeSelection} options={{ headerShown: false }} />
+        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="ModeSelection" component={ModeSelection} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Drawer" component={DrawerNavigator} />
         </Stack.Navigator>
